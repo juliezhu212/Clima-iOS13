@@ -17,12 +17,9 @@ struct WeatherManager {
     }
     
     func performRequest(urlString: String) {
-        // 1. Create a URL
         if let url = URL(string: urlString) {
-            // 2. Create a URLSession
             let session = URLSession(configuration: .default)
             
-            // 3. Give the session a task
             let task = session.dataTask(with: url) { data, response, error in
                 if error != nil {
                     print(error!)
@@ -34,7 +31,6 @@ struct WeatherManager {
                 }
             }
             
-            // 4. Start the task
             task.resume()
         }
     }
@@ -43,9 +39,23 @@ struct WeatherManager {
         let decoder = JSONDecoder()
         do {
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
-            print(decodedData.weather[0].description)
+            let id = decodedData.weather[0].id
+            print(getConditionName(weatherId: id))
         }  catch {
             print(error)
+        }
+    }
+    
+    func getConditionName(weatherId: Int) -> String {
+        switch weatherId {
+        case 200...299: return "cloud.bolt"
+        case 300...399: return "cloud.bolt.rain"
+        case 500...599: return "cloud.rain"
+        case 600...699: return "snowflake"
+        case 700...799: return "tornado"
+        case 800: return "sun.max"
+        case 801...809: return "cloud"
+        default: return "unknown"
         }
     }
 }
